@@ -132,6 +132,21 @@ html { scroll-padding-top: 72px; }   /* al saltar a una sección, el título no 
   box-shadow: 0 0 10px rgba(59, 230, 238, 0.55), inset 0 0 8px rgba(59, 230, 238, 0.25);
   text-shadow: 0 0 8px rgba(59, 230, 238, 0.6);
 }
+/* Selector de idioma: el activo en cian y negrita */
+.lang { justify-self: end; display: inline-flex; align-items: center; gap: 2px; }
+.lang__sep { color: var(--muted); opacity: 0.5; font-size: 12px; }
+.lang__btn {
+  min-width: 34px; min-height: 40px; padding: 0 4px;
+  border: 0; background: none;
+  font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
+  color: var(--text); opacity: 0.6;
+  transition: opacity 200ms var(--ease-out), color 200ms var(--ease-out), text-shadow 200ms var(--ease-out);
+}
+.lang__btn:hover { opacity: 1; color: var(--cyan); }
+.lang__btn[aria-pressed="true"] {
+  opacity: 1; color: var(--cyan);
+  text-shadow: 0 0 8px rgba(59, 230, 238, 0.6);
+}
 .btn-line {
   justify-self: end;
   font-family: var(--mono); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
@@ -300,6 +315,7 @@ html { scroll-padding-top: 72px; }   /* al saltar a una sección, el título no 
   margin: 0;
   aspect-ratio: 4 / 5;
 }
+.about { overflow-x: clip; }   /* la foto es más ancha que su marco (márgenes transparentes): no debe ensanchar la página en celular */
 .about__photo {
   position: absolute;
   left: 50%; bottom: 0;
@@ -819,7 +835,7 @@ a, button, [role="button"], label, select, .reel__btn, .lb__thumb {
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 1000px) {
   /* en pantallas pequeñas el menú sigue visible, alineado a la derecha */
-  .nav { grid-template-columns: auto 1fr; }
+  .nav { grid-template-columns: auto 1fr auto; }
   .nav__links { justify-self: end; }
 }
 @media (max-width: 640px) {
@@ -829,8 +845,11 @@ a, button, [role="button"], label, select, .reel__btn, .lb__thumb {
 }
 @media (max-width: 420px) {
   .nav__logo { display: none; }
-  .nav { grid-template-columns: 1fr; }
-  .nav__links { justify-self: center; }
+  .nav { grid-template-columns: minmax(0, 1fr) auto; gap: 2px; padding-inline: 6px; }
+  .nav__links { justify-self: start; gap: 0; }
+  .nav__links a { font-size: 9.5px; letter-spacing: 0.03em; padding: 8px 6px; }
+  .lang__btn { min-width: 24px; padding: 0 2px; font-size: 10px; letter-spacing: 0.04em; }
+  .lang__sep { font-size: 10px; }
 }
 @media (max-width: 1000px) {
   .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
