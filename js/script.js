@@ -1,6 +1,8 @@
 // Sergio López — Portafolio · interacciones
 (() => {
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let lang = "es";
+  const say = (es, en) => lang === "en" ? en : es;
 
   // 1. Partir el nombre en caracteres (el h1 conserva el texto para lectores de pantalla)
   document.querySelectorAll("[data-split]").forEach(el => {
@@ -59,7 +61,7 @@
       img.classList.add("is-loading");
       img.onload = () => img.classList.remove("is-loading");
       img.src = src(list[idx]);
-      img.alt = `${brand}, pieza ${idx + 1} de ${list.length}`;
+      img.alt = say(`${brand}, pieza ${idx + 1} de ${list.length}`, `${brand}, piece ${idx + 1} of ${list.length}`);
       count.textContent = `${idx + 1} / ${list.length}`;
       thumbs.querySelectorAll(".lb__thumb").forEach((t, k) => {
         t.setAttribute("aria-current", k === idx ? "true" : "false");
@@ -70,7 +72,7 @@
       brand = b; list = GALERIAS[b] || []; opener = from;
       title.textContent = b;
       thumbs.innerHTML = list.map((n, k) =>
-        `<button class="lb__thumb" type="button" role="listitem" data-i="${k}" aria-label="Ver pieza ${k + 1}"><img src="${src(n)}" alt="" loading="lazy"></button>`).join("");
+        `<button class="lb__thumb" type="button" role="listitem" data-i="${k}" aria-label="${say(`Ver pieza ${k + 1}`, `View piece ${k + 1}`)}"><img src="${src(n)}" alt="" loading="lazy"></button>`).join("");
       lb.showModal();
       document.documentElement.style.overflow = "hidden";
       show(0);
@@ -107,6 +109,114 @@
     });
   });
 
+  // Idioma: el HTML está en español y aquí está su traducción. Para traducir un texto nuevo,
+  // agrega una línea "texto en español": "texto en inglés"; si falta, se queda en español.
+  const TRADUCCION = {
+    // Menú y portada
+    "Principal": "Main",
+    "Idioma": "Language",
+    "Inicio": "Home",
+    "Sobre mí": "About me",
+    "Proyectos": "Projects",
+    "Contacto": "Contact",
+    "Especialidades": "Specialties",
+    "Diseñador Gráfico": "Graphic Designer",
+    "IA Aplicada al Diseño": "AI Applied to Design",
+    "Años de experiencia": "Years of experience",
+    "Marcas": "Brands",
+    // Sobre mí
+    "Diseñador Gráfico con más de 6 años de experiencia liderando el desarrollo de soluciones de comunicación visual para organizaciones de los sectores farmacéutico, educativo y corporativo.":
+      "Graphic Designer with over 6 years of experience leading the development of visual communication solutions for organizations in the pharmaceutical, education and corporate sectors.",
+    "Especializado en branding, identidad visual, campañas de comunicación, contenido digital, e-learning y producción multimedia, integrando animación, UX/UI, postproducción audiovisual e inteligencia artificial para optimizar procesos creativos, fortalecer la experiencia del usuario y generar soluciones visuales estratégicas con impacto en la comunicación y el posicionamiento de marca.":
+      "Specialized in branding, visual identity, communication campaigns, digital content, e-learning and multimedia production, integrating animation, UX/UI, audiovisual post-production and artificial intelligence to streamline creative processes, strengthen the user experience and deliver strategic visual solutions that make an impact on brand communication and positioning.",
+    "Hablemos": "Let's talk",
+    // Servicios
+    "Servicios": "Services",
+    "Diseño gráfico": "Graphic design",
+    "Estrategias gráficas y piezas de diseño que comunican con claridad, desde la idea hasta el resultado final.":
+      "Graphic strategies and design pieces that communicate clearly, from the initial idea to the final result.",
+    "Diseño UX/UI": "UX/UI design",
+    "Interfaces claras y fáciles de usar, pensadas para la experiencia de las personas, como cursos e-learning y herramientas digitales.":
+      "Clear, easy-to-use interfaces built around people's experience, such as e-learning courses and digital tools.",
+    "Arte 3D": "3D art",
+    "Modelado y arte 3D que dan volumen y personalidad a marcas, personajes y productos.":
+      "3D modeling and art that give volume and personality to brands, characters and products.",
+    "Diseño digital": "Digital design",
+    "Contenido y materiales digitales consistentes para campañas, plataformas y equipos de trabajo.":
+      "Consistent digital content and materials for campaigns, platforms and work teams.",
+    "Dirección de proyectos": "Project management",
+    "Liderazgo y trabajo en equipo multidisciplinario, con visión de futuro y atención al contexto sociocultural.":
+      "Leadership and multidisciplinary teamwork, with a forward-looking vision and attention to sociocultural context.",
+    // Cinta de herramientas
+    "Herramientas": "Tools",
+    "UX/UI e interactivos": "UX/UI & interactive",
+    "Modelado 3D": "3D modeling",
+    "IA generativa": "Generative AI",
+    // Proyectos
+    "Abrir galería de Noxpirin": "Open Noxpirin gallery",
+    "Abrir galería de Gamaderm": "Open Gamaderm gallery",
+    "Abrir galería de Adorem": "Open Adorem gallery",
+    "Más proyectos en Behance": "More projects on Behance",
+    "Árbol de competencias": "Competency Tree",
+    "¿Dónde está Patricio?": "Where's Patricio?",
+    "Saizen · Farmacéutico": "Saizen · Pharmaceutical",
+    "Déficit de hormona de crecimiento": "Growth Hormone Deficiency",
+    "Manual de marca": "Brand guidelines",
+    "Ver perfil completo en Behance": "View full profile on Behance",
+    // Contacto, empresas y pie de página
+    "¿Tienes un proyecto o una vacante para tu equipo? Escríbeme y conversamos.":
+      "Have a project or an opening on your team? Write to me and let's talk.",
+    "Correo": "Email",
+    "Escríbeme por WhatsApp": "Message me on WhatsApp",
+    "Ubicación": "Location",
+    "Empresas con las que he trabajado": "Companies I've worked with",
+    "© 2026 Sergio López · Diseñador gráfico": "© 2026 Sergio López · Graphic Designer",
+    // Galería
+    "Cerrar galería": "Close gallery",
+    "Pieza anterior": "Previous piece",
+    "Pieza siguiente": "Next piece",
+  };
+  const clean = s => s.replace(/\s+/g, " ").trim();
+  const tr = s => (lang === "en" && TRADUCCION[s]) || s;
+
+  // guarda el español original la primera vez que ve cada texto o etiqueta
+  const baseText = new Map(), baseLabel = new Map();
+  const textNodes = [];
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+    acceptNode: n => n.parentElement.closest("script, style, [data-type]") || !n.nodeValue.trim()
+      ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT,
+  });
+  while (walker.nextNode()) {
+    textNodes.push(walker.currentNode);
+    baseText.set(walker.currentNode, clean(walker.currentNode.nodeValue));
+  }
+  const labelled = [...document.querySelectorAll("[aria-label]")].filter(el => !el.classList.contains("lang__btn"));
+  labelled.forEach(el => baseLabel.set(el, el.getAttribute("aria-label")));
+  const description = document.querySelector('meta[name="description"]');
+  const baseDescription = description.content;
+  const langListeners = [];
+
+  const applyLang = next => {
+    lang = next;
+    document.documentElement.lang = lang;
+    document.title = say("Sergio López — Portafolio", "Sergio López — Portfolio");
+    description.content = say(baseDescription, "Sergio López, graphic designer based in Bogotá: branding, UX/UI, motion graphics, 3D art and AI applied to design.");
+    textNodes.forEach(n => { n.nodeValue = tr(baseText.get(n)); });
+    labelled.forEach(el => el.setAttribute("aria-label", tr(baseLabel.get(el))));
+    document.querySelectorAll(".nav__links a").forEach(a => { a.dataset.text = a.textContent; });
+    document.querySelectorAll(".lang__btn").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+    langListeners.forEach(fn => fn());
+  };
+  // primera visita: inglés si el navegador está en inglés; después, lo último que eligió la persona
+  let savedLang = null;
+  try { savedLang = localStorage.getItem("lang"); } catch {}
+  applyLang(savedLang === "es" || savedLang === "en" ? savedLang : /^en\b/i.test(navigator.language) ? "en" : "es");
+  document.querySelectorAll(".lang__btn").forEach(b => b.addEventListener("click", () => {
+    if (b.dataset.lang === lang) return;
+    applyLang(b.dataset.lang);
+    try { localStorage.setItem("lang", lang); } catch {}
+  }));
+
   // Menú activo: marca la sección en pantalla y da fondo al menú al bajar
   const nav = document.querySelector(".nav");
   const navLinks = [...document.querySelectorAll(".nav__links a")];
@@ -129,21 +239,30 @@
 
   // 2c. Descripción que se escribe sola al llegar a "Sobre mí"
   const typed = [...document.querySelectorAll("[data-type]")];
-  const chars = typed.map(p => {
-    const text = p.textContent.replace(/\s+/g, " ").trim();
-    p.innerHTML = `<span class="sr-only">${text}</span><span aria-hidden="true">${
-      [...text].map(c => `<span class="t">${c}</span>`).join("")}</span>`;
-    return [...p.querySelectorAll(".t")];
-  });
+  const typedBase = typed.map(p => clean(p.textContent));
+  let chars = [];
+  const renderTyped = () => {
+    chars = typed.map((p, k) => {
+      const text = tr(typedBase[k]);
+      p.innerHTML = `<span class="sr-only">${text}</span><span aria-hidden="true">${
+        [...text].map(c => `<span class="t">${c}</span>`).join("")}</span>`;
+      return [...p.querySelectorAll(".t")];
+    });
+  };
+  renderTyped();
   const showAll = () => chars.flat().forEach(s => s.classList.add("on"));
+  let started = false, typeRun = 0;
+  // al cambiar de idioma: si ya empezó a escribirse, el texto nuevo aparece completo
+  langListeners.push(() => { typeRun++; renderTyped(); if (started || reduce) showAll(); });
   if (reduce) showAll();
   else if (typed.length) {
     const speeds = [24, 9];               // ms por letra: la entrada más pausada, el resto más ágil
-    let started = false;
     const type = async () => {
+      const run = typeRun;
       for (let k = 0; k < chars.length; k++) {
         const list = chars[k], ms = speeds[k] ?? 10;
         for (let i = 0; i < list.length; i++) {
+          if (run !== typeRun) return;
           if (i) list[i - 1].classList.remove("caret");
           list[i].classList.add("on", "caret");
           const c = list[i].textContent;
